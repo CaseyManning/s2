@@ -36,7 +36,13 @@ impl Player {
         let mag = ((self.tx - self.x) * (self.tx - self.x)
             + (self.ty - self.y) * (self.ty - self.y))
             .sqrt();
-        let v = [(self.tx - self.x) / mag, (self.ty - self.y) / mag];
+
+        console!(log, mag);
+
+        let mut v = [0.0, 0.0];
+        if mag != 0.0 {
+            v = [(self.tx - self.x) / mag, (self.ty - self.y) / mag];
+        }
 
         self.x += v[0];
         self.y += v[1];

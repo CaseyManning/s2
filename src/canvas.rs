@@ -1,3 +1,4 @@
+use stdweb::console;
 use stdweb::traits::*;
 use stdweb::unstable::TryInto;
 use stdweb::web::html_element::CanvasElement;
@@ -33,8 +34,10 @@ impl Canvas {
     }
 
     pub fn draw(&self, x: f64, y: f64, color: &str) {
+        console!(log, x);
+        console!(log, y);
         assert!(x < f64::from(self.width));
-        assert!(x < f64::from(self.height));
+        assert!(y < f64::from(self.height));
 
         self.ctx.set_fill_style_color(color);
 

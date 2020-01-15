@@ -21,6 +21,10 @@ pub enum GameEvent {
 }
 
 fn main() {
+    ::std::panic::set_hook(Box::new(|info| {
+        console!(error, format!("!!! RUST PANIC !!! {:?}", info));
+    }));
+
     stdweb::initialize();
 
     let canvas = Canvas::new("#canvas");
