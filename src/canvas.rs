@@ -34,8 +34,6 @@ impl Canvas {
     }
 
     pub fn draw(&self, x: f64, y: f64, color: &str) {
-        console!(log, x);
-        console!(log, y);
         assert!(x < f64::from(self.width));
         assert!(y < f64::from(self.height));
 

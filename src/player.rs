@@ -21,31 +21,19 @@ impl Player {
         }
     }
     pub fn update(&mut self) {
-        // if self.direction == "Up" {
-        //     self.y -= 1.0;
-        // }
-        // if self.direction == "Down" {
-        //     self.y += 1.0;
-        // }
-        // if self.direction == "Left" {
-        //     self.x -= 1.0;
-        // }
-        // if self.direction == "Right" {
-        //     self.x += 1.0;
-        // }
         let mag = ((self.tx - self.x) * (self.tx - self.x)
             + (self.ty - self.y) * (self.ty - self.y))
             .sqrt();
 
-        console!(log, mag);
+        // let mut v = [0.0, 0.0];
+        let v = if mag != 0.0 {
+            ((self.tx - self.x) / mag, (self.ty - self.y) / mag)
+        } else {
+            (0.0, 0.0)
+        };
 
-        let mut v = [0.0, 0.0];
-        if mag != 0.0 {
-            v = [(self.tx - self.x) / mag, (self.ty - self.y) / mag];
-        }
-
-        self.x += v[0];
-        self.y += v[1];
+        self.x += v.0;
+        self.y += v.1;
 
         // if self.tx > self.x {
         //     self.x += 1.0;
@@ -64,10 +52,6 @@ impl Player {
     pub fn set_target(&mut self, tx: i32, ty: i32) {
         self.tx = tx.into();
         self.ty = ty.into();
-    }
-
-    pub fn change_dir(&mut self, direction: String) {
-        self.direction = direction;
     }
 
     pub fn draw(&self, canvas: &Canvas) {

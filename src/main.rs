@@ -33,17 +33,6 @@ fn main() {
 
     stdweb::web::document().add_event_listener({
         let player = player.clone();
-        move |event: KeyDownEvent| match event.key().as_ref() {
-            "ArrowLeft" => player.borrow_mut().change_dir(String::from("Left")),
-            "ArrowRight" => player.borrow_mut().change_dir(String::from("Right")),
-            "ArrowUp" => player.borrow_mut().change_dir(String::from("Up")),
-            "ArrowDown" => player.borrow_mut().change_dir(String::from("Down")),
-            _ => {}
-        }
-    });
-
-    stdweb::web::document().add_event_listener({
-        let player = player.clone();
         move |event: MouseMoveEvent| {
             player
                 .borrow_mut()
