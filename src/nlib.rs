@@ -5,7 +5,7 @@ use vessels::{
 };
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct Player {
+pub struct NetPlayer {
     pub x: f64,
     pub y: f64,
     pub color: f64,
@@ -13,5 +13,5 @@ pub struct Player {
 
 #[object]
 pub trait GameState {
-    fn get_players(&self) -> Infallible<Serde<Vec<Player>>>;
+    fn get_players(&self) -> Infallible<Serde<Vec<NetPlayer>>>;
 }

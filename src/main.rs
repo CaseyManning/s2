@@ -2,9 +2,11 @@
 extern crate stdweb;
 
 mod canvas;
+// mod nlib;
 mod player;
 
 use canvas::Canvas;
+// use nlib::GameState;
 use player::Player;
 
 use stdweb::traits::*;
@@ -14,6 +16,13 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use stdweb::console;
 use stdweb::web::event;
+
+// use vessels::{
+//     channel::IdChannel,
+//     core::{hal::network::Client, run},
+//     format::Cbor,
+//     log,
+// };
 
 pub enum GameEvent {
     KeyDown(event::KeyDownEvent),

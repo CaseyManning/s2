@@ -7,16 +7,16 @@ use vessels::{
     format::Cbor,
 };
 
-mod lib;
-pub use self::lib::GameState;
-pub use self::lib::Player;
+mod nlib;
+pub use self::nlib::GameState;
+pub use self::nlib::NetPlayer;
 
 pub struct Game {
-    pub players: Vec<Player>,
+    pub players: Vec<NetPlayer>,
 }
 
 impl GameState for Game {
-    fn get_players(&self) -> Infallible<Serde<Vec<Player>>> {
+    fn get_players(&self) -> Infallible<Serde<Vec<NetPlayer>>> {
         let players = self.players.clone();
         Box::pin(async move {Ok(Serde(players))})
     }
