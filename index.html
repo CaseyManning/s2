@@ -1,0 +1,19 @@
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+</head>
+
+<body>
+    <script type="module">
+        import init from './wasmTest.js';
+        async function run() {
+            await init();
+        }
+        run();
+    </script>
+
+    <canvas id="canvas" width="800" height="600"></canvas>
+</body>
+
+</html>
