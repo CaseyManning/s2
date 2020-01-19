@@ -1,55 +1,70 @@
-// use vessels::{
-//     log,
-//     kind::{Infallible, Serde},
-//     replicate::{Share, Shared},
-//     channel::IdChannel,
-//     core::{register, run, hal::{network::Server, crypto::Hasher}},
-//     format::Cbor,
-// };
+use vessels::{
+    log,
+    kind::{Future, Serde},
+    replicate::{Share, Shared},
+    channel::IdChannel,
+    core::{register, run, hal::{network::Server, crypto::Hasher}},
+    format::Cbor,
+};
 
-// mod nlib;
-// pub use self::nlib::GameState;
-// pub use self::nlib::NetPlayer;
+mod nlib;
+pub use self::nlib::GameState;
+pub use self::nlib::NetPlayer;
 
-// pub struct Game {
-//     pub players: Vec<NetPlayer>,
-// }
+pub struct Game {
+    pub players: Vec<NetPlayer>,
+}
 
-// impl GameState for Game {
-//     fn get_players(&self) -> Infallible<Serde<Vec<NetPlayer>>> {
-//         let players = self.players.clone();
-//         Box::pin(async move {Ok(Serde(players))})
-//     }
-// }
+impl GameState for Game {
+    fn get_players(&self) -> Future<Serde<Vec<NetPlayer>>> {
+        let mut players = self.players.clone();
+        log!("Giving Player Positions");
+        Box::pin(async move {Serde(players)})
+    }
+    fn update_pos(&mut self, player: NetPlayer, id: usize) -> Future<i32> {
+        if id >= self.players.len() {
+            self.players.push(player)
+        } else {
+            self.players[id] = player;
+        }
+        log!("Got a player position");
+        Box::pin(async move {2})
+    }
 
-// impl Game {
-//     pub fn new() -> Self {
-//         Self {
-//             players: vec![],
-//         }
-//     }
-// }
-// impl Default for Game {
-//     fn default() -> Self {
-//         Game::new()
-//     }
-// }
+    fn new_id(&mut self) -> Future<i32> {
+        let i: i32 = self.players.len() as i32;
+        log!("Giving Out a new Id");
+        Box::pin(async move {i})
+    }
+}
 
-// const BIND: &str = "127.0.0.1:61200";
+impl Game {
+    pub fn new() -> Self {
+        Self {
+            players: vec![],
+        }
+    }
+}
+impl Default for Game {
+    fn default() -> Self {
+        Game::new()
+    }
+}
 
-// fn main() {
+const BIND: &str = "127.0.0.1:61200";
 
-//     let mut server = Server::new().unwrap();
-//     let board = Shared::new(Box::new(Game::new()) as Box<dyn GameState>);
-//     register(|| Hasher::new().unwrap());
-//     run(async move {
-//             server.listen::<Box<dyn GameState>, IdChannel, Cbor>(
-//                 BIND.parse().unwrap(),
-//                 Box::new(move || {
-//                     let board = board.share();
-//                     Box::pin(async move { Box::new(board.share()) as Box<dyn GameState> })
-//                 }),
-//             ).await.unwrap();
-//         }
-//     );
-// }
+fn main() {
+    let mut server = Server::new().unwrap();
+    let board = Shared::new(Box::new(Game::new()) as Box<dyn GameState>);
+    register(|| Hasher::new().unwrap());
+    run(async move {
+            server.listen::<Box<dyn GameState>, IdChannel, Cbor>(
+                BIND.parse().unwrap(),
+                Box::new(move || {
+                    let board = board.share();
+                    Box::pin(async move { Box::new(board.share()) as Box<dyn GameState> })
+                }),
+            ).await.unwrap();
+        }
+    );
+}
