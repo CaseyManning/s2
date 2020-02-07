@@ -1,3 +1,5 @@
+use web_sys::{console::log_1, window, CanvasRenderingContext2d, HtmlCanvasElement, MouseEvent};
+
 pub struct Player {
     pub x: f64,
     pub y: f64,
@@ -29,4 +31,6 @@ impl Player {
         self.tx = tx.into();
         self.ty = ty.into();
     }
+
+    pub fn foo(self, context: &CanvasRenderingContext2d) {}
 }

@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 use vessels::{
-    kind::{Future, Serde},
+    kind::{Future, Serde, Stream},
     object, Kind,
 };
+
 #[derive(Serialize, Deserialize, Clone, Kind, Copy)]
 pub struct NetPlayer {
     pub x: f64,
@@ -18,7 +19,7 @@ impl NetPlayer {
 
 #[object]
 pub trait GameState {
-    fn get_players(&self) -> Future<Serde<Vec<NetPlayer>>>;
+    fn get_players(&self) -> Stream<Vec<NetPlayer>>;
 
     fn new_id(&mut self) -> Future<i32>;
 
