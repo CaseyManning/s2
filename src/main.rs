@@ -1,21 +1,21 @@
 // mod canvas;
 mod nlib;
 mod player;
-use nlib::GameState;
-use nlib::NetPlayer;
+// use nlib::GameState;
+// use nlib::NetPlayer;
 use player::Player;
 use std::{cell::RefCell, panic, rc::Rc};
 // use stdweb::console;
 use futures::lock::Mutex;
 use futures::StreamExt;
 use lazy_static::*;
-use vessels::{
-    channel::IdChannel,
-    core::{hal::network::Client, run},
-    format::Cbor,
-    kind::Stream,
-    log,
-};
+// use vessels::{
+//     channel::IdChannel,
+//     core::{hal::network::Client, run},
+//     format::Cbor,
+//     kind::Stream,
+//     log,
+// };
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
 use web_sys::{console::log_1, window, CanvasRenderingContext2d, HtmlCanvasElement, MouseEvent};
 
@@ -57,30 +57,12 @@ fn main() {
         context.clear_rect(0.0, 0.0, canvas.width().into(), canvas.height().into());
         context.set_fill_style(&JsValue::from_str("blue"));
         let mut guard = (plyr).try_lock().unwrap();
-        // ctx.beginPath();
-        // ctx.moveTo(guard.x, guard.y);
-        // ctx.lineTo(100, 50);
-        // ctx.lineTo(50, 100);
-        // ctx.lineTo(0, 90);
-        // ctx.closePath();
-        // ctx.fill();
+        context.fill();
 
         context.fill_rect(guard.x, guard.y, 20.0, 20.0);
         guard.update(elapsed);
         drop(guard);
 
-        // run(async move {
-        // let gOthers = (others).try_lock().unwrap();
-        // while let Some(ships) = gOthers.next().await {
-        //     for enemy in ships.iter() {
-        //         context.set_fill_style(&JsValue::from_str("red"));
-        //         context.fill_rect(enemy.x, enemy.y, 20.0, 20.0);
-        //     }
-        // }
-        // drop(gOthers);
-        // // let gid = (id).try_lock().unwrap();
-        // // log_1(&JsValue::from_f64((*gid as f64)));
-        // });
         window()
             .unwrap()
             .request_animation_frame(cb.borrow().as_ref().unwrap().as_ref().unchecked_ref())
@@ -101,6 +83,14 @@ fn main() {
         .add_event_listener_with_callback("mousemove", mouse_move_handler.as_ref().unchecked_ref())
         .unwrap();
     mouse_move_handler.forget();
+
+    let mouse_click_handler = Closure::wrap(Box::new(|e: MouseEvent| {
+        log_1(&JsValue::from_f64(e.button().into()));
+    }) as Box<dyn FnMut(_)>);
+    window
+        .add_event_listener_with_callback("mousedown", mouse_click_handler.as_ref().unchecked_ref())
+        .unwrap();
+    mouse_click_handler.forget();
 
     // run(async move {
     //     let mut network = Client::new().unwrap();

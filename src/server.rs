@@ -5,50 +5,51 @@ use vessels::{
         register, run,
     },
     format::Cbor,
-    kind::{Future, Serde},
+    kind::{Infallible, Serde},
     log,
     replicate::{Share, Shared},
 };
 
-mod nlib;
-pub use self::nlib::GameState;
-pub use self::nlib::NetPlayer;
+mod lib;
+pub use self::lib::State;
 
-pub struct Game {
-    pub players: Vec<NetPlayer>,
+pub struct BoardState {
+    pub state: Vec<Vec<i32>>,
+    pub current_players: i32,
 }
 
-impl GameState for Game {
-    fn get_players(&self) -> Future<Serde<Vec<NetPlayer>>> {
-        let mut players = self.players.clone();
-        log!("Giving Player Positions");
-        Box::pin(async move { Serde(players) })
-    }
-    fn update_pos(&mut self, player: NetPlayer, id: usize) -> Future<i32> {
-        if id >= self.players.len() {
-            self.players.push(player)
-        } else {
-            self.players[id] = player;
-        }
-        log!("Got a player position");
-        Box::pin(async move { 2 })
+impl State for BoardState {
+    fn get_players(&self) -> Infallible<Serde<Vec<Vec<i32>>>> {
+        log!("Getting the Board");
+        let state = self.state.clone();
+        Box::pin(async move { Ok(Serde(state)) })
     }
 
-    fn new_id(&mut self) -> Future<i32> {
-        let i: i32 = self.players.len() as i32;
-        log!("Giving Out a new Id");
-        Box::pin(async move { i })
+    fn next_id(&mut self) -> Infallible<i32> {
+        log!("New player, id: {}", self.current_players);
+        let current_players = self.current_players;
+        self.current_players += 1;
+        self.state.push(vec![0, 0]);
+        Box::pin(async move { Ok(current_players) })
+    }
+
+    fn update_position(&mut self, id: i32, x: i32, y: i32) -> Infallible<i32> {
+        self.state[id as usize] = vec![x, y];
+        Box::pin(async move { Ok(0) })
     }
 }
 
-impl Game {
+impl BoardState {
     pub fn new() -> Self {
-        Self { players: vec![] }
+        Self {
+            state: vec![],
+            current_players: 0,
+        }
     }
 }
-impl Default for Game {
+impl Default for BoardState {
     fn default() -> Self {
-        Game::new()
+        BoardState::new()
     }
 }
 
@@ -56,15 +57,15 @@ const BIND: &str = "127.0.0.1:61200";
 
 fn main() {
     let mut server = Server::new().unwrap();
-    let board = Shared::new(Box::new(Game::new()) as Box<dyn GameState>);
+    let board = Shared::new(Box::new(BoardState::new()) as Box<dyn State>);
     register(|| Hasher::new().unwrap());
     run(async move {
         server
-            .listen::<Box<dyn GameState>, IdChannel, Cbor>(
+            .listen::<Box<dyn State>, IdChannel, Cbor>(
                 BIND.parse().unwrap(),
                 Box::new(move || {
                     let board = board.share();
-                    Box::pin(async move { Box::new(board.share()) as Box<dyn GameState> })
+                    Box::pin(async move { Box::new(board.share()) as Box<dyn State> })
                 }),
             )
             .await

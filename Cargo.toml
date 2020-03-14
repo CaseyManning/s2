@@ -7,7 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-vessels = { git = "https://github.com/noocene/vessels", features = ['core'], rev = "edfe5d3413a8bd4b46bf1bc95ccb1a5863e92342" }
+# vessels = { git = "https://github.com/noocene/vessels", features = ['core'], rev = "edfe5d3413a8bd4b46bf1bc95ccb1a5863e92342" }
+vessels = { git = "https://github.com/noocene/vessels", features = ['core'] }
 serde = "1.0.103"
 futures = "0.3.1"
 lazy_static = "1.4.0"
@@ -34,6 +35,9 @@ web-sys = { version = "0.3.35", features = [
 wasm-bindgen = "0.2.58"
 console_error_panic_hook = "0.1.6"
 anyhow = "1.0.26"
+
+[build]
+target = "wasm32-unknown-unknown"
 
 [[bin]]
 name = "wasmTest"

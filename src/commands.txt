@@ -1,0 +1,3 @@
+cargo build --target "wasm32-unknown-unknown" --release --bin wasmTest
+wasm-bindgen target/wasm32-unknown-unknown/release/wasmTest.wasm --out-dir . --web
+live-server
